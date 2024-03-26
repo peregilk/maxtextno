@@ -101,7 +101,7 @@ record_internal_nn_metrics: 0
 
 # Output directory
 # Create a GCS bucket, e.g. my-maxtext-outputs and set this to "gs://my-maxtext-outputs/"
-base_output_directory: ""
+base_output_directory: "gs://maxlog-eu/"
 
 # Jax cache directory
 jax_cache_dir: "~/jax_cache"
@@ -157,7 +157,7 @@ num_slices: -1
 
 # Dataset
 # Replace with your path given as argument in download_dataset.sh, e.g. "gs://my-maxtext-dataset/"
-dataset_path: ""
+dataset_path: "gs://maxdata-eu"
 vocab_size: 32_000 # powers of 2 for sharding
 tokenizer_path: "assets/tokenizer.llama2"
 dataset_name: 'c4/en:3.0.1'
