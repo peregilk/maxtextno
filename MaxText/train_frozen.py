@@ -314,7 +314,17 @@ def setup_mesh_and_model(config):
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
   
-  print(model.tabulate(..., rngs={}))
+  # Example: Creating a dummy RNG key and input shapes for a model expecting a single input tensor
+  dummy_rng = {'params': jax.random.PRNGKey(0)}
+  # Example input shape: batch size of 1, sequence length of config.max_input_length
+  input_shape = (1, 1024)
+  
+  # Dummy input for tabulate; adjust the shape as per your model's requirements
+  dummy_input = jax.ShapeDtypeStruct(shape=input_shape, dtype=jnp.int32)
+  
+  # Correct call to tabulate
+  print(model.tabulate(dummy_input, rngs=dummy_rng))
+
   exit(-1)
 
   return init_rng, writer, checkpoint_manager, mesh, model, learning_rate_schedule, tx
