@@ -313,10 +313,7 @@ def setup_mesh_and_model(config):
   model = Transformer(config, mesh, quant=quant)
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
-
-  print("Model's parameters:")
-  print(model.tabulate())
-
+  
   return init_rng, writer, checkpoint_manager, mesh, model, learning_rate_schedule, tx
 
 def setup_train_loop(config):
