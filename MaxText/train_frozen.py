@@ -498,7 +498,7 @@ def mask_gradients(grads):
         if isinstance(grad, dict):
             masked_grads[name] = mask_gradients(grad)
         else:
-            if "token_embedder.embedding" in name:
+            if "xxxtoken_embedder.embedding" in name:
                 masked_grads[name] = grad  # Keep gradient for the embedding layer
             else:
                 masked_grads[name] = jax.tree_map(lambda x: jnp.zeros_like(x), grad)  # Set other gradients to zero
