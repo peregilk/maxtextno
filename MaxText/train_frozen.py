@@ -314,6 +314,9 @@ def setup_mesh_and_model(config):
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
   
+  print(model.tabulate())
+  exit(-1)
+  
   return init_rng, writer, checkpoint_manager, mesh, model, learning_rate_schedule, tx
 
 def setup_train_loop(config):
