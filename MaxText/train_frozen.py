@@ -260,6 +260,9 @@ def train_step(model, config, state, data, dropout_rng):
              'learning/raw_grad_norm': max_utils.l2norm_pytree(raw_grads),
              'learning/param_norm': max_utils.l2norm_pytree(new_state.params)}, 'scalars': {}}
 
+  # This feezes everything but the embedding layer
+  grads = mask_gradients(grads)  # This is the only line affected
+
   if config.record_internal_nn_metrics:
     record_activation_metrics(metrics, intermediate_outputs, config)
 
@@ -482,6 +485,21 @@ def print_model_layers(params, prefix=''):
         else:  # Otherwise, it's a parameter tensor
             print(f"{prefix}{k}: {v.shape}")
 
+def mask_gradients(grads):
+    """
+    Set gradients to zero for all parameters except the embedding layer.
+    """
+    masked_grads = {}
+    for name, grad in grads.items():
+        # Recursively mask gradients for nested dictionaries
+        if isinstance(grad, dict):
+            masked_grads[name] = mask_gradients(grad)
+        else:
+            if "token_embedder.embedding" in name:
+                masked_grads[name] = grad  # Keep gradient for the embedding layer
+            else:
+                masked_grads[name] = jax.tree_map(lambda x: jnp.zeros_like(x), grad)  # Set other gradients to zero
+    return masked_grads
 
 def main(argv: Sequence[str]) -> None:
   jax.config.update('jax_default_prng_impl', 'unsafe_rbg')
