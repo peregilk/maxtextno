@@ -314,19 +314,17 @@ def setup_mesh_and_model(config):
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
 
-  # Dummy input for initializing the model and getting parameter structure
-  dummy_inputs = jnp.ones((1, config.max_input_length), jnp.int32)  # Adjust as necessary
-  dummy_positions = jnp.ones((1, config.max_input_length), jnp.int32)  # Adjust as necessary
+  # Create dummy inputs with a fixed size of 128
+  dummy_inputs = jnp.ones((1, 128), jnp.int32)  # Input IDs
+  dummy_positions = jnp.ones((1, 128), jnp.int32)  # Position IDs
 
-  # Use dummy data to initialize the model and get its parameters
+  # Initialize the model with dummy inputs to get parameter structure
   with mesh:
       dummy_rngs = {'params': init_rng, 'dropout': init_rng}
       init_vars = model.init(dummy_rngs, dummy_inputs, dummy_positions, True)
   
-  # Extract parameters from initialized variables
+  # Extract and print parameters from initialized variables
   params = init_vars['params']
-
-  # Function to recursively print model parameters
   def print_params(params, prefix=''):
       for k, v in params.items():
           if isinstance(v, dict):
@@ -334,11 +332,8 @@ def setup_mesh_and_model(config):
           else:
               print(f'{prefix + k}: {v.shape}')
 
-  # Print the model's parameters
   print("Model's parameters:")
   print_params(params)
-
-
 
   return init_rng, writer, checkpoint_manager, mesh, model, learning_rate_schedule, tx
 
