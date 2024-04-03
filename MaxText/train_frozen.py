@@ -319,8 +319,8 @@ def setup_mesh_and_model(config):
 
   # Assuming your model takes two inputs: input_ids and decoder_positions
   # Adjust the shapes (1, 128) as per your model's requirements
-  dummy_input_ids = jnp.ones((32, 1), dtype=jnp.float32)  # Adjust dtype if necessary
-  dummy_decoder_positions = jnp.ones((32, 1), dtype=jnp.float32)  # Adjust dtype if necessary
+  dummy_input_ids = jnp.ones((8, 1), dtype=jnp.float32)  # Adjust dtype if necessary
+  dummy_decoder_positions = jnp.ones((8, 1), dtype=jnp.float32)  # Adjust dtype if necessary
 
   # Initialize the model with the dummy inputs
   # Ensure the arguments match your model's expected inputs
