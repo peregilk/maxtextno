@@ -313,32 +313,6 @@ def setup_mesh_and_model(config):
   model = Transformer(config, mesh, quant=quant)
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
-  
-  # Create a dummy RNG
-  dummy_rngs = {'params': jax.random.PRNGKey(0)}
-
-  # Assuming your model takes two inputs: input_ids and decoder_positions
-  # Adjust the shapes (1, 128) as per your model's requirements
-  dummy_input_ids = jnp.ones((1, 1), dtype=jnp.float32)  # Adjust dtype if necessary
-  dummy_decoder_positions = jnp.ones((1, 1), dtype=jnp.float32)  # Adjust dtype if necessary
-
-  # Initialize the model with the dummy inputs
-  # Ensure the arguments match your model's expected inputs
-  params = model.init(dummy_rngs, dummy_input_ids, dummy_decoder_positions)['params']
-
-  # Function to recursively print parameter names and shapes
-  def print_params(params, prefix=''):
-      for k, v in params.items():
-          if isinstance(v, dict):
-              print_params(v, prefix=prefix + k + '/')
-          else:
-              print(f'{prefix + k}: {v.shape}')
-
-  # Print the model's parameters
-  print_params(params)
-
-
-  exit(-1)
 
   return init_rng, writer, checkpoint_manager, mesh, model, learning_rate_schedule, tx
 
@@ -366,6 +340,9 @@ def setup_train_loop(config):
 
   state, state_mesh_annotations, data_iterator = max_utils.setup_training_state(model, data_iterator,
           tx, config, init_rng, mesh, checkpoint_manager)
+
+  print("Model Layers and Parameters:")
+  print_model_layers(state.params)
 
   return ( init_rng, writer, checkpoint_manager, state_mesh_annotations, model,
           mesh, learning_rate_schedule, data_iterator, eval_data_iterator, state)
@@ -496,6 +473,15 @@ def train_loop(config, state=None):
   write_metrics(writer, local_metrics_file, running_gcs_metrics, metrics, config.steps - 1, config) # final step metrics
   max_utils.close_summary_writer(writer)
   return state
+
+def print_model_layers(params, prefix=''):
+    """Recursively print the model layers and parameter shapes."""
+    for k, v in params.items():
+        if isinstance(v, dict):  # If the value is a dictionary, it's a sub-layer
+            print_model_layers(v, prefix=prefix + k + '.')
+        else:  # Otherwise, it's a parameter tensor
+            print(f"{prefix}{k}: {v.shape}")
+
 
 def main(argv: Sequence[str]) -> None:
   jax.config.update('jax_default_prng_impl', 'unsafe_rbg')
