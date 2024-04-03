@@ -314,11 +314,19 @@ def setup_mesh_and_model(config):
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
   
-  # Create a dummy RNG and initialize the model to get the parameters
+  # Create a dummy RNG
   dummy_rngs = {'params': jax.random.PRNGKey(0)}
-  params = model.init(dummy_rngs, jnp.ones((1, 128), jnp.float32))['params']  # Use appropriate dummy input
 
-  # Function to recursively print parameters names and shapes
+  # Assuming your model takes two inputs: input_ids and decoder_positions
+  # Adjust the shapes (1, 128) as per your model's requirements
+  dummy_input_ids = jnp.ones((1, 128), dtype=jnp.float32)  # Adjust dtype if necessary
+  dummy_decoder_positions = jnp.ones((1, 128), dtype=jnp.float32)  # Adjust dtype if necessary
+
+  # Initialize the model with the dummy inputs
+  # Ensure the arguments match your model's expected inputs
+  params = model.init(dummy_rngs, dummy_input_ids, dummy_decoder_positions)['params']
+
+  # Function to recursively print parameter names and shapes
   def print_params(params, prefix=''):
       for k, v in params.items():
           if isinstance(v, dict):
@@ -326,7 +334,7 @@ def setup_mesh_and_model(config):
           else:
               print(f'{prefix + k}: {v.shape}')
 
-  # Print parameters
+  # Print the model's parameters
   print_params(params)
 
 
