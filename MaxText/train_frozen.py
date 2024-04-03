@@ -263,8 +263,8 @@ def train_step(model, config, state, data, dropout_rng):
   # This feezes everything but the embedding layer
   grads = mask_gradients(grads)  # This is the only line affected
 
-  print(config.gradient_clipping_threshold)
-  exit(-1)
+  # print(config.gradient_clipping_threshold)
+
 
   if config.record_internal_nn_metrics:
     record_activation_metrics(metrics, intermediate_outputs, config)
