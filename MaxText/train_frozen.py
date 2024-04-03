@@ -314,30 +314,8 @@ def setup_mesh_and_model(config):
   learning_rate_schedule = max_utils.create_learning_rate_schedule(config)
   tx = optimizers.get_optimizer(config, learning_rate_schedule)
 
-  # Create dummy inputs with a fixed size of 128
-  dummy_inputs = jnp.ones((1, 128), jnp.int32)  # Input IDs
-  dummy_positions = jnp.ones((1, 128), jnp.int32)  # Position IDs
-  # Adjust dummy data size for debugging
-  dummy_batch_size = 128  # Set this to a number divisible by your device count
-  dummy_inputs = jnp.ones((dummy_batch_size, 128), jnp.int32)
-  dummy_positions = jnp.ones((dummy_batch_size, 128), jnp.int32)
-  
-  # Initialize the model with dummy inputs to get parameter structure
-  with mesh:
-      dummy_rngs = {'params': init_rng, 'dropout': init_rng}
-      init_vars = model.init(dummy_rngs, dummy_inputs, dummy_positions, True)
-  
-  # Extract and print parameters from initialized variables
-  params = init_vars['params']
-  def print_params(params, prefix=''):
-      for k, v in params.items():
-          if isinstance(v, dict):
-              print_params(v, prefix=prefix + k + '/')
-          else:
-              print(f'{prefix + k}: {v.shape}')
-
   print("Model's parameters:")
-  print_params(params)
+  print(model.tabulate())
 
   return init_rng, writer, checkpoint_manager, mesh, model, learning_rate_schedule, tx
 
