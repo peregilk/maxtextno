@@ -319,8 +319,8 @@ def setup_mesh_and_model(config):
   dummy_positions = jnp.ones((1, 128), jnp.int32)  # Position IDs
   # Adjust dummy data size for debugging
   dummy_batch_size = 128  # Set this to a number divisible by your device count
-  dummy_inputs = jnp.ones((dummy_batch_size, config.max_input_length), jnp.int32)
-  dummy_positions = jnp.ones((dummy_batch_size, config.max_input_length), jnp.int32)
+  dummy_inputs = jnp.ones((dummy_batch_size, 128), jnp.int32)
+  dummy_positions = jnp.ones((dummy_batch_size, 128), jnp.int32)
   
   # Initialize the model with dummy inputs to get parameter structure
   with mesh:
