@@ -59,7 +59,7 @@ save_config_to_gcs: False
 
 # Activation dtypes.
 dtype: "bfloat16"
-quantization: "" #defaults to no quantization, i.e. bf16. possible alternative setting is 'int8'
+quantization: "" #defaults to no quantization, i.e. bf16. possible alternative setting is 'int8' or use fp8 to run with 8-bit floating-point GeMMs on NVIDIA GPUs.
 quantize_kvcache: False
 
 # Shard the range finding operation for quantization. By default this is set to number of slices.
@@ -160,10 +160,11 @@ num_slices: -1
 dataset_path: "gs://maxdata-eu"
 vocab_size: 32_000 # powers of 2 for sharding
 tokenizer_path: "assets/tokenizer.llama2"
-dataset_name: 'c4/multilingual:3.1.0'
-eval_dataset_name: 'c4/multilingual:3.1.0'
+dataset_name: 'c4/en:3.0.1'
+eval_dataset_name: 'c4/en:3.0.1'
 eval_split: 'validation'
 per_device_batch_size: 12.0
+expansion_factor_real_data: -1 # if -1 then all hosts will load real data, else total_hosts//expansion_factor_real_data will pull data from GCS.
 eval_per_device_batch_size: 0
 max_corpus_chars: 10_000_000
 dataset_type: c4 # must be c4 or synthetic
@@ -247,3 +248,16 @@ decode_sampling_temperature: 1.
 
 eval_interval: -1  # the specific number of train step between eval_step
 target_eval_loss: 0.  # early stop once reaching target eval_loss
+
+# Goodput parameters
+enable_goodput_recording: False
+
+# Vertex AI Tensorboard Configurations - https://github.com/google/maxtext/tree/main/getting_started/Use_Vertex_AI_Tensorboard.md
+# Set to True for GCE, False if running via XPK
+use_vertex_tensorboard: False
+# Project to create Vertex AI Tensorboard in for GCE, blank if project is set using 'gcloud config set project'
+# Set this to blank if running via XPK
+vertex_tensorboard_project: ""
+# Region to create Vertex AI Tensorboard in for GCE, blank if running via XPK
+# Vertex AI supported regions: https://cloud.google.com/vertex-ai/docs/general/locations#available-regions
+vertex_tensorboard_region: ""
